@@ -1,7 +1,5 @@
 ### Sistem Pemberitahuan Lion Air
 
-![Lion Air Logo](https://www.google.com/url?sa=i&url=https%3A%2F%2Fpinterpoin.com%2Flion-air-berencana-batalkan-order-boeing-737-max%2Flion-air-logo%2F&psig=AOvVaw3d5qUodQclQTXovBb0Srtr&ust=1714019297987000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCMC1x86B2oUDFQAAAAAdAAAAABAE)
-
 ---
 
 #### Arsitektur
