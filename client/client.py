@@ -4,12 +4,12 @@ from datetime import datetime
 
 # Fungsi untuk menulis pesan ke file
 def tulis_ke_file(file_name, message):
-    with open(file_name, 'a') as file:
-        file.write(message + '\n')
+    with open(file_name, 'w') as file:
+        file.write(message)
 
 # Koneksi RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-    host='zone.koreacentral.cloudapp.azure.com', port=5672, virtual_host='/', credentials=pika.PlainCredentials('guest', 'guest')))
+    host='lionair.southeastasia.cloudapp.azure.com', port=5672, virtual_host='/', credentials=pika.PlainCredentials('guest', 'guest')))
 channel = connection.channel()
 
 # Deklarasi exchange dan queue
@@ -23,19 +23,36 @@ channel.queue_bind(exchange='boarding_exchange', queue=queue_name)
 def callback(ch, method, properties, body):
     pesan = json.loads(body)
     if 'boarding_time' in pesan:
-        # Mengambil tanggal dari waktu boarding
-        tanggal_boarding = pesan['boarding_time'].split(' ')[0]
-        tulis_ke_file('boarding.txt', tanggal_boarding)
+        # Mengambil waktu boarding dari pesan
+        waktu_boarding = pesan['boarding_time']
+
+        formatted_message = (
+                "Kepada Yth. Penumpang,\n\n"
+                f"Kami informasikan bahwa jadwal boarding penerbangan XYZ123 tujuan Kota A mengalami perubahan. "
+                f"Boarding akan dimulai pada {waktu_boarding}. Mohon maaf atas ketidaknyamanan ini dan terima kasih atas pengertiannya.\n\n"
+                "Salam,\nLion Air Group"
+            )
+        
+        tulis_ke_file('boarding.txt', formatted_message)
     if 'transit_location' in pesan:
         lokasi_transit = pesan['transit_location']
         # Memastikan lokasi transit adalah string sebelum menulis ke file
         if isinstance(lokasi_transit, str):
-            tulis_ke_file('lokasi.txt', lokasi_transit)
+
+            formatted_message = (
+                "Kepada Yth. Penumpang,\n\n"
+                f"Kami informasikan bahwa lokasi transit untuk penerbangan XYZ123 tujuan Kota A telah mengalami perubahan. "
+                f"Lokasi transit baru adalah {lokasi_transit}. Mohon diperhatikan informasi ini untuk kenyamanan perjalanan Anda.\n\n"
+                f"Kami mohon maaf atas ketidaknyamanan yang terjadi dan terima kasih atas pengertiannya.\n\n"
+                "Salam,\nLion Air Group"
+            )
+
+            tulis_ke_file('lokasi.txt', formatted_message)
 
     print("Pesan diterima:", pesan)
 
 # Mengonsumsi pesan
 channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
-print('Menunggu pesan...')
+print('\nMenunggu pesan...')
 channel.start_consuming()

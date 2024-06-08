@@ -3,7 +3,7 @@ import json
 
 # Koneksi RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-    host='zone.koreacentral.cloudapp.azure.com', port=5672, virtual_host='/', credentials=pika.PlainCredentials('guest', 'guest')))
+    host='lionair.southeastasia.cloudapp.azure.com', port=5672, virtual_host='/', credentials=pika.PlainCredentials('guest', 'guest')))
 channel = connection.channel()
 
 # Deklarasi exchange dan queue
@@ -32,7 +32,7 @@ def cek_perubahan_lokasi_transit(lokasi_transit):
 
 # Mendapatkan input dari pengguna
 def input_jadwal():
-    waktu_boarding = input("Masukkan waktu boarding (format: YYYY-MM-DD): ")
+    waktu_boarding = input("Masukkan waktu boarding (format: YYYY-MM-DD HH:MM): ")
     lokasi_transit = input("Masukkan lokasi transit: ")
     return {
         "boarding_time": waktu_boarding,
@@ -43,7 +43,7 @@ def input_jadwal():
 
 # Loop untuk menerima input dan mengirim pesan
 while True:
-    inputan = input("Apakah Anda ingin memperbarui jadwal? (y/n): ")
+    inputan = input("\nApakah Anda ingin memperbarui jadwal? (y/n): ")
     if inputan.lower() == 'y':
         pesan = input_jadwal()
         if not cek_perubahan_waktu_boarding(pesan['boarding_time']) and not cek_perubahan_lokasi_transit(pesan['transit_location']):
